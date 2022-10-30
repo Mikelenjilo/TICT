@@ -1,123 +1,145 @@
-"""
-TODO: I(x) Done
-* I(x) = 1/log2(P(x))
-
-TODO: I(y) Done
-* I(y) = 1/log2(P(y))
-
-TODO: H(x) Done 
-* H(x) = Somme de P(x) * log2(1/P(x))
-* Let the user enter the probabilities for the X sequence
-
-TODO: H(y) Done
-* H(y) = Somme de P(y) * log2(1/P(y))
-* Let the user enter the probabilities for the Y sequence
-
-TODO: P(x,y) Done
-* Let the user enter teh probabilities for the P(x,y),
-* and let him choose if the two sequences are independents or not
-
-TODO: I(x,y)
-* IF the two sequences are independents so I(x,y) = 0, else => I(x,y) != 0
-
-TODO: H(x,y) Done
-* H(x,y) = Somme de P(x,y) * log2(1/P(x,y)) 
-
-"""
-
 import math
 import sys
 
+#---------------------------------------------Déclaration Des Fonctions-------------------------------------------
+
+# Fonction qui permet de repérer si la somme dépace le 1 quand on introduit les probabilités,
+# et permet aussi de vérifier si la somme est égale a 1 à la fin de la saisie.
 def errorChecker(a, somme):
     if(a == 0):
+        # Vérifie que la somme des probabiltés ne dépace pas le 1.
         if(somme > 1):
             sys.exit("Error: The Somme of all probabilities can't be greater than 1")
     elif(a == 1):
+        # Vérifie que la somme des probabiltés égale a 1 a la fin de la saisie.
         if(somme != 1):
             sys.exit("Error: The Somme of all probabilities must be equal to 1")
 
 
+# Fonction qui permet de saisir les probabilités.
 def probabilite(n, name):
     i = 0
     probabilites = []
     somme = 0
+
     for i in range(n):
         l = float(input("Spécifier la probabilité P({}{}) = ".format(name, i)))
         probabilites.append(l)
         somme = somme + l
-        errorChecker(0, somme)
-    errorChecker(1, somme)
+        errorChecker(0, somme) # Vérifier que la somme ne dépace pas le 1.
+    errorChecker(1, somme) # Vérifie que la somme des probabiltés égale a 1 a la fin de la saisie.
+    
     return probabilites
 
+
+# Fonction qui permet de calculer la quantité d'information d'une séquence.
 def quantiteInformation(probabilite, n, name):
     i = 0
     quantiteInformations = []
+
     for i in range(n):
         l = round(math.log2(1/probabilite[i]), 2)
         quantiteInformations.append(l)
         print("I(P({}{})) = {}".format(name, i, l))
+
     return quantiteInformations
 
+
+# Fonction qui permet de calculer l'entropie d'une séquence.
 def entropie(probabilite, quantiteInformation, n, name):
     i = 0
     entropie = 0
+
     for i in range(n):
         entropie = round(entropie + (probabilite[i] * quantiteInformation[i]), 2)
-
+    
     print("Entropie H({}) = {}".format(name, entropie))
+    
     return entropie
 
-def quantiteInformationMutuelle(n, probabiliteXY, probabiliteX, probabiliteY):
+
+# Fonction qui permet de caculer ou de saisir les probabilité mutuelles de deux séquence.
+def probabiliteMutuelle(x, y, probabiliteX, probabiliteY, answer):
+    probabiliteXY = []
+    somme = 0
+    matrice = []
+
+    if(answer == 0): # Si les deux séquences sont dépendantes.
+        print("Saisie des probabilité mutuelle des deux séquence X et Y :")
+        print("----------------------------------------------------------")
+        for i in range(0, x):
+            for j in range(0, y):
+                l = float(input("Saisie la valeur de P(X{},Y{}) : ".format(i, j))) # Saisie des probabilités
+                probabiliteXY.append(l)
+                somme = somme + l
+            errorChecker(0, somme) # Vérifier que la somme ne dépace pas le 1.
+        errorChecker(1, somme) # Vérifier que la somme égale a 1 è la fin de la saisie.
+
+        for i in range(x): # Boucle pour pouvoir transformer la liste en matrice
+            ligne = []
+            for j in range(y):
+                ligne.append(probabiliteXY[(x-1) * i + j])
+            matrice.append(ligne)
+
+        return matrice
+
+    elif(answer == 1): # Si les deux séquences sont indépendantes.
+        print("Calcul des probabilité mutuelle des deux séquence X et Y :")
+        print("----------------------------------------------------------")
+        for i in range(x):
+            for j in range(y):
+                l = round(probabiliteX[i] * probabiliteY[j], 2) # Calcul des probabilités
+                probabiliteXY.append(l)
+                print("P(X{}, Y{}) = {}".format(i, j, l))
+   
+        for i in range(x): # Boucle pour pouvoir transformer la liste en matrice
+            ligne = []
+            for j in range(y):
+                ligne.append(probabiliteXY[(x-1) * i + j])
+            matrice.append(ligne)
+
+        return matrice
+
+
+# Fonction qui permet de calculer la quantité d'information mutuelle.
+def quantiteInformationMutuelle(x, y, probabiliteX, probabiliteY, probabiliteXY):
     quantiteInformationXY = 0
 
-    if(answer == 0):
-        for i in range(0, n):
-            for j in range(0, n):
-                l = float(round(probabiliteXY[i][j] * math.log2((probabiliteXY[i][j]) / (probabiliteX[i] * probabiliteY[j])), 2))
-                quantiteInformationXY = quantiteInformationXY + l
-    elif(answer == 1):
-        quantiteInformation = 0
+    if(answer == 0): # Si les deux séquence sont dépendantes
+        for i in range(x):
+            for j in range(y):
+                l = float(probabiliteXY[i][j] * math.log2((probabiliteXY[i][j]) / (probabiliteX[i] * probabiliteY[j])))
+                quantiteInformationXY = round(quantiteInformationXY + l, 2)
+
+    elif(answer == 1): # Si les deux séquence sont indépendantes
+        quantiteInformationXY = 0
+    
     print("La quantité d'information mutuelle I(X,Y) = {}".format(quantiteInformationXY))
+
     return quantiteInformationXY  
 
 
-    return quantiteInformationXY
-
-def probabiliteMutuelle(n):
-    probabiliteXY = []
-    for i in range(0, n):
-        somme = 0
-        for j in range(0, n):
-            l = float(input("Saisie la valeur de P(X{},Y{}) : ".format(i, j)))
-            probabiliteXY.append(l)
-            somme = somme + l
-            errorChecker(0, somme)
-        errorChecker(1, somme)
-                
-
-    matrice = []
-    for i in range(n):
-        ligne = []
-        for j in range(n):
-            ligne.append(probabiliteXY[n * i + j])
-        matrice.append(ligne)
-    
-    return matrice
-
-def entropieMutuelle(n, probabiliteXY, entropiex, entropiey, answer):
+# Fonction qui permet de calculer l'entropie mutuelle.
+def entropieMutuelle(x, y, probabiliteXY, entropiex, entropiey, answer):
     entropie = 0
-    if(answer == 0):
-        for i in range(0, n):
-            for j in range(0, n):
+
+    if(answer == 0): # Si les deux séquence sont dépendantes
+        for i in range(x):
+            for j in range(y):
                 entropie = round(entropie + probabiliteXY[i][j] * math.log2(1/probabiliteXY[i][j]), 2)
     
-    elif(answer == 1):
+    elif(answer == 1): # Si les deux séquence sont indépendantes
         entropie = entropiex + entropiey
     
     print("L'Entropie H(X,Y) = {}".format(entropie))
+
     return entropie
 
-n = 0
+
+#---------------------------------------------Code Principale---------------------------------------------
+
+x = 0
+y = 0
 probabiliteX = []
 probabiliteY = []
 probabiliteXY = []
@@ -130,46 +152,50 @@ EntropieX = 0
 EntropieY = 0
 EntropieXY = 0
 
-# Saisie de la longeur de la séquence X et de la séquence Y
+# Saisie de la longeur de la séquence X
 print()
-print("Saisie de la longeur de la séquence X et de la séquence Y :")
-print("-----------------------------------------------------------")
-n = int(input("Spécifier la longeur de la séquence X et de la séquence Y : "))
-
+print("Saisie de la longeur de la séquence X :")
+print("---------------------------------------")
+x = int(input("Spécifier la longeur de la séquence X  : "))
 print()
 
-answer = int(input("Les deux séquence sont indépendantes ou non ? (oui = 1, non = 0) : "))
+# Saisie de la longeur de la séquence Y
+print()
+print("Saisie de la longeur de la séquence Y :")
+print("---------------------------------------")
+y = int(input("Spécifier la longeur de la séquence Y : "))
+print()
 
+# Les deux séquences sont indépendantes ou non ?
+answer = int(input("Les deux séquences sont indépendantes ou non ? (oui = 1, non = 0) : "))
 print()
 
 # Saisie des probabilités de la séquence X
 print("Saisie des probabilité de la séquence X:")
 print("----------------------------------------")
-probabiliteX = probabilite(n, "X")
+probabiliteX = probabilite(x, "X")
 print()
 
 # Saisie des probabilités de la séquence Y
 print("Saisie des probabilité de la séquence Y:")
 print("----------------------------------------")
-probabiliteY = probabilite(n, "Y")
+probabiliteY = probabilite(y, "Y")
 print()
 
-# Saisie des probabilitées mutuelles X,Y si 
-print("Saisie des probabilité mutuelle des deux séquence X et Y :")
-print("----------------------------------------------------------")
-probabiliteXY = probabiliteMutuelle(n)
+
+# Saisie ou Calcul des probabilitées mutuelles X,Y selon la réponse
+probabiliteXY = probabiliteMutuelle(x, y, probabiliteX, probabiliteY, answer)
 
 # Calcul des Quantité d'Information
 print()
-
 print("Les Quantités D'Informations I(X):")
 print("----------------------------------")
-quantiteInformationX = quantiteInformation(probabiliteX, n, "X")
+quantiteInformationX = quantiteInformation(probabiliteX, x, "X")
 
 print()
 print("Les Quantités D'Informations I(Y):")
 print("----------------------------------")
-quantiteInformationY = quantiteInformation(probabiliteY, n, "Y")
+quantiteInformationY = quantiteInformation(probabiliteY, y, "Y")
 
 print()
 
@@ -177,33 +203,26 @@ print()
 print()
 print("Les Quantités D'Informations I(X, Y):")
 print("-------------------------------------")
-quantiteInformationXY = quantiteInformationMutuelle(n, probabiliteXY, probabiliteX, probabiliteY)
-
+quantiteInformationXY = quantiteInformationMutuelle(x, y, probabiliteX, probabiliteY, probabiliteXY)
 print()
 
 
 # Calcul de l'Entropie H(X)
 print()
-
 print("L'Entropie H(X) :")
 print("-----------------")
-EntropieX = entropie(probabiliteX, quantiteInformationX, n, "X")
-
+EntropieX = entropie(probabiliteX, quantiteInformationX, x, "X")
 print()
 
 # Calcul de l'Entropie H(Y)
 print()
-
 print("L'Entropie H(Y) :")
 print("-----------------")
-EntropieY = entropie(probabiliteY, quantiteInformationY, n, "Y")
+EntropieY = entropie(probabiliteY, quantiteInformationY, y, "Y")
 
 # Calcul de l'Entropie mutuelle H(X,Y)
 print()
-
 print("L'Entropie H(X,Y) : ")
 print("--------------------")
-EntropieXY = entropieMutuelle(n, probabiliteXY, EntropieX, EntropieY, answer)
-
-
+EntropieXY = entropieMutuelle(x, y, probabiliteXY, EntropieX, EntropieY, answer)
 print()
