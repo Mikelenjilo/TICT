@@ -17,12 +17,12 @@ def errorChecker(a, somme):
 
 
 # Fonction qui permet de saisir les probabilités.
-def probabilite(n, name):
+def probabilite(longeur, name):
     i = 0
     probabilites = []
     somme = 0
 
-    for i in range(n):
+    for i in range(0, longeur):
         l = float(input("Spécifier la probabilité P({}{}) = ".format(name, i)))
         probabilites.append(l)
         somme = somme + l
@@ -37,7 +37,7 @@ def quantiteInformation(probabilite, n, name):
     i = 0
     quantiteInformations = []
 
-    for i in range(n):
+    for i in range(0, n):
         l = round(math.log2(1/probabilite[i]), 2)
         quantiteInformations.append(l)
         print("I(P({}{})) = {}".format(name, i, l))
@@ -75,10 +75,10 @@ def probabiliteMutuelle(x, y, probabiliteX, probabiliteY, answer):
             errorChecker(0, somme) # Vérifier que la somme ne dépace pas le 1.
         errorChecker(1, somme) # Vérifier que la somme égale a 1 è la fin de la saisie.
 
-        for i in range(x): # Boucle pour pouvoir transformer la liste en matrice
+        for i in range(0, x): # Boucle pour pouvoir transformer la liste en matrice
             ligne = []
-            for j in range(y):
-                ligne.append(probabiliteXY[(x-1) * i + j])
+            for j in range(0, y):
+                ligne.append(probabiliteXY[x * i + j])
             matrice.append(ligne)
 
         return matrice
@@ -95,14 +95,14 @@ def probabiliteMutuelle(x, y, probabiliteX, probabiliteY, answer):
         for i in range(x): # Boucle pour pouvoir transformer la liste en matrice
             ligne = []
             for j in range(y):
-                ligne.append(probabiliteXY[(x-1) * i + j])
+                ligne.append(probabiliteXY[x * i + j])
             matrice.append(ligne)
 
         return matrice
 
 
 # Fonction qui permet de calculer la quantité d'information mutuelle.
-def quantiteInformationMutuelle(x, y, probabiliteX, probabiliteY, probabiliteXY):
+def quantiteInformationMutuelle(x, y, probabiliteX, probabiliteY, probabiliteXY, answer):
     quantiteInformationXY = 0
 
     if(answer == 0): # Si les deux séquence sont dépendantes
@@ -135,22 +135,64 @@ def entropieMutuelle(x, y, probabiliteXY, entropiex, entropiey, answer):
 
     return entropie
 
+def probabiliteXsachantY(x, y, probabiliteY, probabiliteXY):
+    probabiliteXSachantY = []
+    matrice = []
+    l = 0.0
+    i = 0
+    j = 0
 
+    for i in range(x):
+        for j in range(y):
+            l = round(float(probabiliteXY[i][j] / probabiliteY[j]), 2)
+            probabiliteXSachantY.append(l)
+            print("P(X{} | Y{}) = {}".format(i, j, l))
+
+    for i in range(x):
+        ligne = []
+        for j in range(y):
+            ligne.append(probabiliteXSachantY[(x-1) * i +j])
+        matrice.append(ligne)
+
+    return matrice
+
+    
+def entropieConditionnelle(x, y, probabiliteY, probabiliteXSachantY, answer):
+    somme = 0
+    l = 0
+
+    if(answer == 0):
+        print("L'Entropie conditionnelle H(X|Y) : ")
+        print("------------------------------------")
+        for j in range(y):
+            for i in range(x):
+                l = round(float(probabiliteY[j] * probabiliteXSachantY[i][j] * math.log2(1 / (probabiliteXSachantY[i][j]))), 2)
+                somme = round(somme + l, 2)
+
+        print("L'Entropie Conditionnelle H(X|Y) = {}".format(somme))
+
+        return somme
+
+
+    
 #---------------------------------------------Code Principale---------------------------------------------
 
 x = 0
 y = 0
+answer = 0
 probabiliteX = []
 probabiliteY = []
 probabiliteXY = []
 quantiteInformationX = []
 quantiteInformationY = []
 quantiteInformationXY = 0
+probabiliteXSachantY = []
 sommeX = 0
 sommeY = 0
 EntropieX = 0
 EntropieY = 0
 EntropieXY = 0
+entropieC = 0
 
 # Saisie de la longeur de la séquence X
 print()
@@ -203,7 +245,7 @@ print()
 print()
 print("Les Quantités D'Informations I(X, Y):")
 print("-------------------------------------")
-quantiteInformationXY = quantiteInformationMutuelle(x, y, probabiliteX, probabiliteY, probabiliteXY)
+quantiteInformationXY = quantiteInformationMutuelle(x, y, probabiliteX, probabiliteY, probabiliteXY, answer)
 print()
 
 
@@ -225,4 +267,16 @@ print()
 print("L'Entropie H(X,Y) : ")
 print("--------------------")
 EntropieXY = entropieMutuelle(x, y, probabiliteXY, EntropieX, EntropieY, answer)
+print()
+
+# Loi de Bayes P(xi|yj) = P(xi,yj) / P(yj)
+print()
+print("La probabilté de X sachant Y : ")
+print("-------------------------------")
+probabiliteXSachantY = probabiliteXsachantY(x, y ,probabiliteY, probabiliteXY)
+print()
+
+# Calcul de l'Entropie conditionnelle H(X|Y) = Somme(P(yi))*Somme(P(xi|yj)*log2(1/P(xi|yj)))
+print()
+entropieC = entropieConditionnelle(x, y, probabiliteY, probabiliteXSachantY, answer) 
 print()
