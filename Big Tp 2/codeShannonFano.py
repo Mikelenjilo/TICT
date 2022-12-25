@@ -8,7 +8,9 @@ def codeShannonFano():
     x = []
     p = [functions.node() for _ in range(20)]
 
-    print("\n\nBienvenue dans le programme qui permet de générer un code basé sur l'algorithme de Shannon Fano!")
+    print("\n-------------------------------------------------------------------------------------------------")
+    print("| Bienvenue dans le programme qui permet de générer un code basé sur l'algorithme de Shannon Fano")
+    print("-------------------------------------------------------------------------------------------------")
 
     print("\nSaisie du nombre des symboles :")
     print("-------------------------------")

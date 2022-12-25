@@ -7,6 +7,10 @@ def codeHuffman():
     couple = []
     symboles = []
 
+    print("\n-------------------------------------------------------------------------------------------")
+    print("| Bienvenue dans le programme qui permet de générer un code basé sur l'algorithme de Huffman")
+    print("--------------------------------------------------------------------------------------------")
+
     print("\nSaisie de la longeur de la source :")
     print("-----------------------------------")
     tailleDeLaSource = int(input("Donnez la taille de la source : "))

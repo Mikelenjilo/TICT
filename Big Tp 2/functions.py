@@ -1,14 +1,6 @@
 import sys
 import math
 
-#------------Variables Gloables-------------
-i = 0
-j = 0
-l = 0
-t = 0
-code = []
-probabilites = []
-
 #------------Functions Générales------------
 def error_checker(a, somme): # Fonction qui permet de vérifier si il n ya pas d'erreurs dans les probabilitées.
     if(a == 0):
@@ -22,6 +14,7 @@ def error_checker(a, somme): # Fonction qui permet de vérifier si il n ya pas d
 
 def probabilite(n, name): # Fonction qui permet de saisir les probabilitées.
     somme = 0
+    probabilites = []
 
     for i in range(n):
         l = float(input("Spécifier la probabilité P({}{}) = ".format(name, i)))
@@ -63,6 +56,7 @@ def efficacite(entropie, longeurMoyenne):
 
 #--------------------Code Préfix--------------------
 def verifie_code_prefix(n):
+    code = []
     a = True
 
     for i in range(n):
