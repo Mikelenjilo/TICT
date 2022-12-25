@@ -10,8 +10,8 @@ Entropie = 0
 
 # Saisie de la longeur de la séquence 
 print()
-print("Saisie de la longeur")
-print("--------------------")
+print("Saisie de la longeur :")
+print("----------------------")
 n = int(input("Spécifier la longeur de la séquence X : "))
 
 print()

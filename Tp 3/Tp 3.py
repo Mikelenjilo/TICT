@@ -17,12 +17,12 @@ def errorChecker(a, somme):
 
 
 # Fonction qui permet de saisir les probabilités.
-def probabilite(longeur, name):
+def probabilite(n, name):
     i = 0
     probabilites = []
     somme = 0
 
-    for i in range(0, longeur):
+    for i in range(n):
         l = float(input("Spécifier la probabilité P({}{}) = ".format(name, i)))
         probabilites.append(l)
         somme = somme + l
@@ -37,7 +37,7 @@ def quantiteInformation(probabilite, n, name):
     i = 0
     quantiteInformations = []
 
-    for i in range(0, n):
+    for i in range(n):
         l = round(math.log2(1/probabilite[i]), 2)
         quantiteInformations.append(l)
         print("I(P({}{})) = {}".format(name, i, l))
@@ -75,10 +75,10 @@ def probabiliteMutuelle(x, y, probabiliteX, probabiliteY, answer):
             errorChecker(0, somme) # Vérifier que la somme ne dépace pas le 1.
         errorChecker(1, somme) # Vérifier que la somme égale a 1 è la fin de la saisie.
 
-        for i in range(0, x): # Boucle pour pouvoir transformer la liste en matrice
+        for i in range(x): # Boucle pour pouvoir transformer la liste en matrice
             ligne = []
-            for j in range(0, y):
-                ligne.append(probabiliteXY[x * i + j])
+            for j in range(y):
+                ligne.append(probabiliteXY[(x-1) * i + j])
             matrice.append(ligne)
 
         return matrice
@@ -95,7 +95,7 @@ def probabiliteMutuelle(x, y, probabiliteX, probabiliteY, answer):
         for i in range(x): # Boucle pour pouvoir transformer la liste en matrice
             ligne = []
             for j in range(y):
-                ligne.append(probabiliteXY[x * i + j])
+                ligne.append(probabiliteXY[(x-1) * i + j])
             matrice.append(ligne)
 
         return matrice
@@ -136,17 +136,16 @@ def entropieMutuelle(x, y, probabiliteXY, entropiex, entropiey, answer):
     return entropie
 
 def probabiliteXsachantY(x, y, probabiliteY, probabiliteXY):
+    somme = 0
     probabiliteXSachantY = []
-    matrice = []
     l = 0.0
-    i = 0
-    j = 0
+    matrice = []
 
     for i in range(x):
         for j in range(y):
             l = round(float(probabiliteXY[i][j] / probabiliteY[j]), 2)
             probabiliteXSachantY.append(l)
-            print("P(X{} | Y{}) = {}".format(i, j, l))
+            print("P(X{}, Y{}) = {}".format(i, j, l))
 
     for i in range(x):
         ligne = []
@@ -157,21 +156,18 @@ def probabiliteXsachantY(x, y, probabiliteY, probabiliteXY):
     return matrice
 
     
-def entropieConditionnelle(x, y, probabiliteY, probabiliteXSachantY, answer):
+def entropieConditionnelle(x, y, probabiliteY, probabiliteXSachantY):
     somme = 0
     l = 0
 
-    if(answer == 0):
-        print("L'Entropie conditionnelle H(X|Y) : ")
-        print("------------------------------------")
-        for j in range(y):
-            for i in range(x):
-                l = round(float(probabiliteY[j] * probabiliteXSachantY[i][j] * math.log2(1 / (probabiliteXSachantY[i][j]))), 2)
-                somme = round(somme + l, 2)
+    for j in range(y):
+        for i in range(x):
+            l = float(probabiliteY[j] * probabiliteXSachantY[i][j] * math.log2(1 / (probabiliteXSachantY[i][j])))
+            somme = float(somme + l)
 
-        print("L'Entropie Conditionnelle H(X|Y) = {}".format(somme))
-
-        return somme
+    
+    print("L'Entropie Conditionnelle H(X|Y) = {}".format(somme))
+    return somme
 
 
     
@@ -179,7 +175,6 @@ def entropieConditionnelle(x, y, probabiliteY, probabiliteXSachantY, answer):
 
 x = 0
 y = 0
-answer = 0
 probabiliteX = []
 probabiliteY = []
 probabiliteXY = []
@@ -278,5 +273,7 @@ print()
 
 # Calcul de l'Entropie conditionnelle H(X|Y) = Somme(P(yi))*Somme(P(xi|yj)*log2(1/P(xi|yj)))
 print()
-entropieC = entropieConditionnelle(x, y, probabiliteY, probabiliteXSachantY, answer) 
+print("L'Entropie conditionnelle H(X|Y) : ")
+print("------------------------------------")
+entropieC = entropieConditionnelle(x, y, probabiliteY, probabiliteXSachantY) 
 print()
